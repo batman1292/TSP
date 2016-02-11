@@ -7,25 +7,52 @@ package tsp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 
 /**
  *
- * @author 2IDR-PC
+ * @author choocku
  */
 public class TSP {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    static int numberChromosome;
+    static int MAX_GEN = 1;
+    static int num_attribute = 2;
+    static int num_sample;
+    static double input[][];
+
+    public static void main(String[] args) throws IOException {
         // TODO code application logic here
-        readData();
+        String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
+        setNumDataFormFile(file[0]);
+        input = new double[num_sample][num_attribute];
+        System.out.println(input.length);
+        readData(file[0]);
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+                System.out.print("input[" + i + "][" + j + "] = " + input[i][j] + "\t");
+            }
+            System.out.println();
+        }
     }
     
-    public static void readData() {
-        String path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\berlin52.txt";
+    public static void setNumDataFormFile(String filename) throws FileNotFoundException, IOException {
+        String path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\" + filename;
+        File file = new File(path);
+        LineNumberReader lnr = new LineNumberReader(new FileReader(file));
+        lnr.skip(Long.MAX_VALUE);
+        num_sample = lnr.getLineNumber() + 1;
+        lnr.close();
+    }
+    
+    public static void readData(String filename) {
+        String path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\" + filename;
         File file = new File(path);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -35,7 +62,11 @@ public class TSP {
 //                System.out.println(line);
                 String[] ary = line.split(" ");
                 for (int i = 0; i < ary.length; i++) {
-                    System.out.println(ary[i]);
+                    if (i == 0) {
+                        continue;
+                    } else {
+                        input[current_line][i - 1] = Double.parseDouble(ary[i]);
+                    }
                 }
                 current_line++;
             }
