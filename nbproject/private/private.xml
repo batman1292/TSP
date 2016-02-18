@@ -3,7 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/Code/TSP/src/tsp/TSP.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/TourManager.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/Population.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/City.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/GA.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/TSP.java</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/berlin52.txt</file>
+            <file>file:/D:/BVH/MEE/Intelligent%20System/Task4/TSP/src/tsp/Tour.java</file>
         </group>
     </open-files>
 </project-private>

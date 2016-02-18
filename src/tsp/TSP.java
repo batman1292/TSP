@@ -26,24 +26,25 @@ public class TSP {
     static int num_attribute = 2;
     static int num_sample;
     static double input[][];
-
+    static City inputCity[];
+    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
         setNumDataFormFile(file[0]);
+        inputCity = new City[num_sample];
         input = new double[num_sample][num_attribute];
-        System.out.println(input.length);
         readData(file[0]);
-        for (int i = 0; i < input.length; i++) {
-            for (int j = 0; j < input[i].length; j++) {
-                System.out.print("input[" + i + "][" + j + "] = " + input[i][j] + "\t");
-            }
-            System.out.println();
+        for (int i = 0; i < num_sample; i++) {
+            inputCity[i]  = new City(input[i][0], input[i][1]);
+        }
+        for (int i = 0; i < num_sample; i++) {
+            System.out.println(inputCity[i].toString());
         }
     }
     
     public static void setNumDataFormFile(String filename) throws FileNotFoundException, IOException {
-        String path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\" + filename;
+        String path = local_path + filename;
         File file = new File(path);
         LineNumberReader lnr = new LineNumberReader(new FileReader(file));
         lnr.skip(Long.MAX_VALUE);
@@ -52,7 +53,7 @@ public class TSP {
     }
     
     public static void readData(String filename) {
-        String path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\" + filename;
+        String path = local_path + filename;
         File file = new File(path);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
