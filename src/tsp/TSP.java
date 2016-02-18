@@ -26,8 +26,9 @@ public class TSP {
     static int num_attribute = 2;
     static int num_sample;
     static double city[][];
-    static City chromosome[];
-    static Tour population[];
+    static City gene;
+    static Tour chromosome [];
+    static Population pop;
     static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
 
     public static void main(String[] args) throws IOException {
@@ -35,12 +36,16 @@ public class TSP {
         String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
         setNumDataFormFile(file[0]);
         city = new double[num_sample][num_attribute];
-        chromosome = new City[num_sample];
-        population = new Tour[num_sample];
+        chromosome = new Tour [52];
+//        pop = new Population(num_sample);
         readData(file[0]);
         initPopulation();
+        System.out.println(pop.toString());
         for (int i = 0; i < MAX_GEN; i++) {
-
+            Tour parent1 = selection();
+            System.out.println("patent1 " + parent1.toString());
+            Tour parent2 = selection();
+            System.out.println("patent2 " + parent2.toString());
         }
     }
 
@@ -81,11 +86,39 @@ public class TSP {
 
     public static void initPopulation() {
         for (int i = 0; i < num_sample; i++) {
+            chromosome[i] = new Tour();
             for (int j = 0; j < num_sample; j++) {
-                chromosome[j] = new City(city[j][0], city[j][1]);
+                chromosome[i].addCity(new City(city[j][0], city[j][1]));
             }
-            population[i] = new Tour(num_sample, chromosome);
-            population[i].initIndividual();
+            chromosome[i].initIndividual();
+//            System.out.println(chromosome.toString());
+//            pop.tours[i] = chromosome;
+//            System.out.println(pop.toString());
         }
+        pop = new Population(chromosome);
+//        pop.toString();
+    }
+    
+    public static Tour selection(){
+        double roulette [] = new double[num_sample];
+        double fitness = 0.0;
+        double max_fitness = pop.sumFitness();
+        for(int i = 0; i<num_sample; i++){
+            fitness += pop.getTour(i).getFitness();
+            roulette[i] = fitness*100/max_fitness;
+//            System.out.println("ro["+i+"]"+ pop.getTour(i).getFitness());
+        }
+        double val_roulette = (Math.random() * max_fitness)*100/max_fitness;//random start position of roulette
+//        System.out.println("val random" + val_roulette);
+        int pos_roulette = 0;
+        for( ; pos_roulette<num_sample; pos_roulette++){
+            if(roulette[pos_roulette] > val_roulette){
+                break;
+            }
+        }
+//        System.out.println("pos_roulette" + pos_roulette);
+//        System.out.print("pop ["+ pos_roulette + "] ");
+//            System.out.println(pop.getTour(pos_roulette).toString());
+        return pop.getTour(pos_roulette);
     }
 }

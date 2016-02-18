@@ -10,9 +10,57 @@ package tsp;
  * @author 2IDR-PC
  */
 public class Population {
-    
+
     // Holds population of tours
-//    Tour[] tours;
+    Tour[] tours;
+
+    public Population(int num_tour) {
+        this.tours = new Tour[num_tour];
+        for(int i = 0; i<num_tour; i++){
+            this.tours[i] = new Tour();
+        }
+//        this.tours = tour;
+    }
+    
+    public Population(Tour tour[]){
+        this.tours = tour;
+    }
+    public void setTour(int index, Tour tour) {
+        this.tours[index] = tour;
+    }
+
+    public Tour getTour(int index) {
+        return tours[index];
+    }
+
+    public double getBestFitness() {
+        double fitness = 0.0;
+        for (int i = 0; i < this.tours.length; i++) {
+            if (this.tours[i].getFitness() > fitness) {
+                fitness = this.tours[i].getFitness();
+            }
+        }
+        return fitness;
+    }
+
+    public double sumFitness() {
+        double fitness = 0.0;
+        for (int i = 0; i < this.tours.length; i++) {
+//            if(this.tours[i].getFitness() > fitness){
+            fitness += this.tours[i].getFitness();
+//            }?
+        }
+        return fitness;
+    }
+
+    @Override
+    public String toString() {
+        String geneString = " ";
+        for(int i = 0; i<this.tours.length; i++){
+            geneString += "p["+i+"] "+this.tours[i].toString()+"\n";
+        }
+        return geneString;
+    }
 //
 //    // Construct a population
 //    public Population(int populationSize, boolean initialise) {
