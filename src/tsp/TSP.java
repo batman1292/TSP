@@ -28,18 +28,17 @@ public class TSP {
     static double input[][];
     static City inputCity[];
     static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
+    
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
         setNumDataFormFile(file[0]);
         inputCity = new City[num_sample];
         input = new double[num_sample][num_attribute];
-        readData(file[0]);
-        for (int i = 0; i < num_sample; i++) {
-            inputCity[i]  = new City(input[i][0], input[i][1]);
-        }
-        for (int i = 0; i < num_sample; i++) {
-            System.out.println(inputCity[i].toString());
+        readData(file[0]);        
+        
+        for (int i = 0; i<MAX_GEN; i++){
+            
         }
     }
     
@@ -75,6 +74,9 @@ public class TSP {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        for (int i = 0; i < num_sample; i++) {
+            inputCity[i]  = new City(input[i][0], input[i][1]);
         }
     }
 }
