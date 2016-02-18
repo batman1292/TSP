@@ -12,6 +12,7 @@ import java.util.Collections;
  *
  * @author 2IDR-PC
  */
+//or chromosome 
 public class Tour {
     private ArrayList<City> tour = new ArrayList<City>();
     private double fitness = 0.0;

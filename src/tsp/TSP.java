@@ -25,23 +25,25 @@ public class TSP {
     static int MAX_GEN = 1;
     static int num_attribute = 2;
     static int num_sample;
-    static double input[][];
-    static City inputCity[];
+    static double city[][];
+    static City chromosome[];
+    static Tour population[];
     static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
-    
+
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
         setNumDataFormFile(file[0]);
-        inputCity = new City[num_sample];
-        input = new double[num_sample][num_attribute];
-        readData(file[0]);        
-        
-        for (int i = 0; i<MAX_GEN; i++){
-            
+        city = new double[num_sample][num_attribute];
+        chromosome = new City[num_sample];
+        population = new Tour[num_sample];
+        readData(file[0]);
+        initPopulation();
+        for (int i = 0; i < MAX_GEN; i++) {
+
         }
     }
-    
+
     public static void setNumDataFormFile(String filename) throws FileNotFoundException, IOException {
         String path = local_path + filename;
         File file = new File(path);
@@ -50,7 +52,7 @@ public class TSP {
         num_sample = lnr.getLineNumber() + 1;
         lnr.close();
     }
-    
+
     public static void readData(String filename) {
         String path = local_path + filename;
         File file = new File(path);
@@ -65,7 +67,7 @@ public class TSP {
                     if (i == 0) {
                         continue;
                     } else {
-                        input[current_line][i - 1] = Double.parseDouble(ary[i]);
+                        city[current_line][i - 1] = Double.parseDouble(ary[i]);
                     }
                 }
                 current_line++;
@@ -75,8 +77,15 @@ public class TSP {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public static void initPopulation() {
         for (int i = 0; i < num_sample; i++) {
-            inputCity[i]  = new City(input[i][0], input[i][1]);
+            for (int j = 0; j < num_sample; j++) {
+                chromosome[j] = new City(city[j][0], city[j][1]);
+            }
+            population[i] = new Tour(num_sample, chromosome);
+            population[i].initIndividual();
         }
     }
 }

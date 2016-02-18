@@ -9,6 +9,7 @@ package tsp;
  *
  * @author 2IDR-PC
  */
+//or gene
 public class City {
     double x;
     double y;
