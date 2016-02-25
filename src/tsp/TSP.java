@@ -44,8 +44,8 @@ public class TSP {
         for (int i = 0; i < MAX_GEN; i++) {
             Population selection_pop = selection();
             Population crossover_pop = crossover(selection_pop);
-            System.out.println("#########################################################################################");
-            System.out.println(crossover_pop.toString());
+            Population mutation_pop = mutation(crossover_pop);
+            pop = mutation_pop;
         }
     }
 
@@ -214,6 +214,11 @@ public class TSP {
 //        return crossover;
     }
 
+    public static Population mutation(Population crossover_pop){
+        Population result = new Population(num_sample);
+        return result;
+    }
+    
     public static void inverseMutation(Tour offs1, Tour offs2) {
         double probability = 0.1;
         System.out.println("inverse mmutation");
