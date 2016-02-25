@@ -27,6 +27,14 @@ public class Tour {
     public void addCity(City city) {
         this.tour.add(city);
     }
+    
+    public void setCity(int index, City c) {
+        this.tour.set(index, c);
+    }
+    
+    public City getCity(int index) {
+        return this.tour.get(index);
+    }
 
     public void initIndividual() {
         Collections.shuffle(this.tour);
@@ -57,7 +65,7 @@ public class Tour {
     public String toString() {
         String geneString = "|";
         for (int i = 0; i < this.tour.size(); i++) {
-            geneString += this.tour.get(i) + "|";
+            geneString += this.tour.get(i) + "|\t";
         }
         return geneString;
     }
