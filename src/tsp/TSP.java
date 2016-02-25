@@ -41,12 +41,16 @@ public class TSP {
 //        pop = new Population(num_sample);
         readData(file[0]);
         initPopulation();
+        System.out.println(pop.getBestFitness());
         for (int i = 0; i < MAX_GEN; i++) {
             Population selection_pop = selection();
             Population crossover_pop = crossover(selection_pop);
             Population mutation_pop = mutation(crossover_pop);
             pop = mutation_pop;
+//            System.out.print(i+"\t");
+            System.out.println(pop.getBestFitness());
         }
+        
     }
 
     public static void setNumDataFormFile(String filename) throws FileNotFoundException, IOException {
@@ -201,21 +205,24 @@ public class TSP {
                 }
             }
         } else {
-            System.out.println("don't crossover");
+//            System.out.println("don't crossover");
             offspring1 = p1;
             offspring2 = p2;
         }
         cross.setTour(--index, offspring1);
         cross.setTour(++index, offspring2);
 //        System.out.println();
-        System.out.println("_off1 " + offspring1.toString());
-        System.out.println("_off2 " + offspring2.toString());
-        inverseMutation(offspring1);
+//        System.out.println("_off1 " + offspring1.toString());
+//        System.out.println("_off2 " + offspring2.toString());
+//        inverseMutation(offspring1);
 //        return crossover;
     }
     
     public static Population mutation(Population crossover_pop){
         Population result = new Population(num_sample);
+        for (int i = 0; i<num_sample; i++){
+            result.setTour(i, inverseMutation(crossover_pop.getTour(i)));
+        }
         return result;
     }
     
@@ -225,8 +232,8 @@ public class TSP {
 //        Tour offs1_inverse = new Tour();
 //        Tour offs2_inverse = new Tour();
 //=======
-    public static void inverseMutation(Tour offs) {
-        System.out.println("inverse mutation");
+    public static Tour inverseMutation(Tour offs) {
+//        System.out.println("inverse mutation");
         Tour offs_inverse = new Tour();
 //>>>>>>> origin/master
         int min = 0;
@@ -248,8 +255,8 @@ public class TSP {
                 crossPoint2 = temp;
             }
             offs_inverse = offs;
-            System.out.println("to_inv " + offs_inverse.toString());
-            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+//            System.out.println("to_inv " + offs_inverse.toString());
+//            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
 
             int len = crossPoint2 - crossPoint1;
             int len2 = len >> 1;
@@ -258,13 +265,14 @@ public class TSP {
                 offs_inverse.setCity(crossPoint1+i, offs_inverse.getCity(crossPoint2-i));
                 offs_inverse.setCity(crossPoint2-i, t);
             }
-            System.out.println("mutation complete");
+//            System.out.println("mutation complete");
         } else {
             offs_inverse = offs;
         }
 
-        System.out.println();
-        System.out.println("inv res " + offs.toString());
+//        System.out.println();
+//        System.out.println("inv res " + offs.toString());
+        return offs_inverse;
 //>>>>>>> origin/master
     }
 
