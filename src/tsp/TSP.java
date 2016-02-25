@@ -206,38 +206,48 @@ public class TSP {
         System.out.println();
         System.out.println("_off1 " + offspring1.toString());
         System.out.println("_off2 " + offspring2.toString());
-//        inverseMutation(offspring1, offspring2);
+        inverseMutation(offspring1);
 //        return crossover;
     }
 
-    public static void inverseMutation(Tour offs1, Tour offs2) {
-        System.out.println("inverse mmutation");
-        Tour offs1_inverse = new Tour();
-        Tour offs2_inverse = new Tour();
+    public static void inverseMutation(Tour offs) {
+        System.out.println("inverse mutation");
+        Tour offs_inverse = new Tour();
         int min = 0;
         int max = num_sample - 1;
         int crossPoint1 = 0;
         int crossPoint2 = 0;
         int temp = 0;
+        double mutationProbability = 0.7;
         crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
         crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
+        if (Math.random() < mutationProbability) {
+            while (crossPoint1 == crossPoint2) {
+                crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
+            }
 
-        while (crossPoint1 == crossPoint2) {
-            crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
+            if (crossPoint1 > crossPoint2) {
+                temp = crossPoint1;
+                crossPoint1 = crossPoint2;
+                crossPoint2 = temp;
+            }
+            offs_inverse = offs;
+            System.out.println("to_inv " + offs_inverse.toString());
+            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+
+            int len = crossPoint2 - crossPoint1;
+            int len2 = len >> 1;
+            for (int i = 0; i < len2; ++i) {
+                City t = offs_inverse.getCity(crossPoint1+i);
+                offs_inverse.setCity(crossPoint1+i, offs_inverse.getCity(crossPoint2-i));
+                offs_inverse.setCity(crossPoint2-i, t);
+            }
+            System.out.println("mutation complete");
+        } else {
+            offs_inverse = offs;
         }
-
-        if (crossPoint1 > crossPoint2) {
-            temp = crossPoint1;
-            crossPoint1 = crossPoint2;
-            crossPoint2 = temp;
-        }
-
-        System.out.println("offs1 " + offs1.toString());
-//        System.out.println("offs2 " + offs2.toString());
-        System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
 
         System.out.println();
-        System.out.println("_off1 " + offs1.toString());
-//        System.out.println("_off2 " + offs2.toString());
+        System.out.println("inv res " + offs.toString());
     }
 }
