@@ -213,55 +213,28 @@ public class TSP {
         inverseMutation(offspring1);
 //        return crossover;
     }
-
-<<<<<<< HEAD
+    
     public static Population mutation(Population crossover_pop){
         Population result = new Population(num_sample);
         return result;
     }
     
-    public static void inverseMutation(Tour offs1, Tour offs2) {
-        double probability = 0.1;
-        System.out.println("inverse mmutation");
-        Tour offs1_inverse = new Tour();
-        Tour offs2_inverse = new Tour();
-=======
+//    public static void inverseMutation(Tour offs1, Tour offs2) {
+//        double probability = 0.1;/\
+//        System.out.println("inverse mmutation");
+//        Tour offs1_inverse = new Tour();
+//        Tour offs2_inverse = new Tour();
+//=======
     public static void inverseMutation(Tour offs) {
         System.out.println("inverse mutation");
         Tour offs_inverse = new Tour();
->>>>>>> origin/master
+//>>>>>>> origin/master
         int min = 0;
         int max = num_sample - 1;
         int crossPoint1 = 0;
         int crossPoint2 = 0;
         int temp = 0;
-<<<<<<< HEAD
-        if (Math.random() < probability) {
-            crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
-            crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
-
-            while (crossPoint1 == crossPoint2) {
-                crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
-            }
-
-            if (crossPoint1 > crossPoint2) {
-                temp = crossPoint1;
-                crossPoint1 = crossPoint2;
-                crossPoint2 = temp;
-            }
-
-            System.out.println("offs1 " + offs1.toString());
-//        System.out.println("offs2 " + offs2.toString());
-            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
-
-            System.out.println();
-            System.out.println("_off1 " + offs1.toString());
-        } else {
-
-        }
-//        System.out.println("_off2 " + offs2.toString());
-=======
-        double mutationProbability = 0.7;
+        double mutationProbability = 0.1;
         crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
         crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
         if (Math.random() < mutationProbability) {
@@ -292,7 +265,7 @@ public class TSP {
 
         System.out.println();
         System.out.println("inv res " + offs.toString());
->>>>>>> origin/master
+//>>>>>>> origin/master
     }
 
 }
