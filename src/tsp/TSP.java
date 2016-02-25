@@ -29,31 +29,23 @@ public class TSP {
     static City gene;
     static Tour chromosome[];
     static Population pop;
-    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
+    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
+//    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         String[] file = {"berlin52.txt", "d198.txt", "d657.txt"};
         setNumDataFormFile(file[0]);
         city = new double[num_sample][num_attribute];
-        chromosome = new Tour[52];
+        chromosome = new Tour[num_sample];
 //        pop = new Population(num_sample);
         readData(file[0]);
         initPopulation();
-//        System.out.println(pop.toString());
-        System.out.print("\t\t");
-        for (int a = 0; a < num_sample; a++) {
-            System.out.print(a + "\t\t");
-        }
-        System.out.println();
         for (int i = 0; i < MAX_GEN; i++) {
-            Tour parent1 = selection();
-            System.out.println("patent1 " + parent1.toString());
-            Tour parent2 = selection();
-            System.out.println("patent2 " + parent2.toString());
-            pmxCrossover(parent1, parent2);
-//            System.out.println("a p1 " + parent1.toString());
-//            System.out.println("a p2 " + parent2.toString());
+            Population selection_pop = selection();
+            Population crossover_pop = crossover(selection_pop);
+            Population mutation_pop = mutation(crossover_pop);
+            pop = mutation_pop;
         }
     }
 
@@ -107,30 +99,40 @@ public class TSP {
 //        pop.toString();
     }
 
-    public static Tour selection() {
+    public static Population selection() {
+        Population result = new Population(num_sample);
         double roulette[] = new double[num_sample];
         double fitness = 0.0;
         double max_fitness = pop.sumFitness();
         for (int i = 0; i < num_sample; i++) {
             fitness += pop.getTour(i).getFitness();
             roulette[i] = fitness * 100 / max_fitness;
-//            System.out.println("ro["+i+"]"+ pop.getTour(i).getFitness());
         }
-        double val_roulette = (Math.random() * max_fitness) * 100 / max_fitness;//random start position of roulette
-//        System.out.println("val random" + val_roulette);
-        int pos_roulette = 0;
-        for (; pos_roulette < num_sample; pos_roulette++) {
-            if (roulette[pos_roulette] > val_roulette) {
-                break;
+        for (int i = 0; i < num_sample; i++) {
+            double val_roulette = (Math.random() * max_fitness) * 100 / max_fitness;//random start position of roulette
+            int pos_roulette = 0;
+            for (; pos_roulette < num_sample; pos_roulette++) {
+                if (roulette[pos_roulette] > val_roulette) {
+                    break;
+                }
             }
+            result.setTour(i, pop.getTour(pos_roulette));
         }
-//        System.out.println("pos_roulette" + pos_roulette);
-//        System.out.print("pop ["+ pos_roulette + "] ");
-//            System.out.println(pop.getTour(pos_roulette).toString());
-        return pop.getTour(pos_roulette);
+        return result;
+//        return pop.getTour(pos_roulette);
     }
-
-    public static void pmxCrossover(Tour p1, Tour p2) {
+    
+    public static Population crossover(Population selection_pop){
+        Population result = new Population(num_sample);
+        int index = 0;
+        for (int i = 0; i<num_sample/2; i++){
+            pmxCrossover(selection_pop.getTour(index), selection_pop.getTour(++index), index, result);
+            index++;
+        }
+        return result;
+    }
+    
+    public static void pmxCrossover(Tour p1, Tour p2, int index, Population cross) {
         Tour offspring1 = new Tour();
         Tour offspring2 = new Tour();
         int temp = 0;
@@ -153,7 +155,7 @@ public class TSP {
             }
 //            System.out.println("parent1 " + p1.toString());
 //            System.out.println("parent2 " + p2.toString());
-            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+//            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
             for (int a = 0; a < num_sample; a++) {
                 offspring1.addCity(new City(-1, -1));
                 offspring2.addCity(new City(-1, -1));
@@ -166,9 +168,9 @@ public class TSP {
                 offspring1.setCity(i, c2);
                 offspring2.setCity(i, c1);
             }
-            System.out.println();
-            System.out.println("_off1 " + offspring1.toString());
-            System.out.println("_off2 " + offspring2.toString());
+//            System.out.println();
+//            System.out.println("_off1 " + offspring1.toString());
+//            System.out.println("_off2 " + offspring2.toString());
 
             for (int i = 0; i < num_sample; i++) {
                 for (int j = crossPoint1; j <= crossPoint2; j++) {
@@ -203,14 +205,22 @@ public class TSP {
             offspring1 = p1;
             offspring2 = p2;
         }
-        System.out.println();
+        cross.setTour(--index, offspring1);
+        cross.setTour(++index, offspring2);
+//        System.out.println();
         System.out.println("_off1 " + offspring1.toString());
         System.out.println("_off2 " + offspring2.toString());
 //        inverseMutation(offspring1, offspring2);
 //        return crossover;
     }
 
+    public static Population mutation(Population crossover_pop){
+        Population result = new Population(num_sample);
+        return result;
+    }
+    
     public static void inverseMutation(Tour offs1, Tour offs2) {
+        double probability = 0.1;
         System.out.println("inverse mmutation");
         Tour offs1_inverse = new Tour();
         Tour offs2_inverse = new Tour();
@@ -219,25 +229,30 @@ public class TSP {
         int crossPoint1 = 0;
         int crossPoint2 = 0;
         int temp = 0;
-        crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
-        crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
-
-        while (crossPoint1 == crossPoint2) {
+        if (Math.random() < probability) {
+            crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
             crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
-        }
 
-        if (crossPoint1 > crossPoint2) {
-            temp = crossPoint1;
-            crossPoint1 = crossPoint2;
-            crossPoint2 = temp;
-        }
+            while (crossPoint1 == crossPoint2) {
+                crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
+            }
 
-        System.out.println("offs1 " + offs1.toString());
+            if (crossPoint1 > crossPoint2) {
+                temp = crossPoint1;
+                crossPoint1 = crossPoint2;
+                crossPoint2 = temp;
+            }
+
+            System.out.println("offs1 " + offs1.toString());
 //        System.out.println("offs2 " + offs2.toString());
-        System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
 
-        System.out.println();
-        System.out.println("_off1 " + offs1.toString());
+            System.out.println();
+            System.out.println("_off1 " + offs1.toString());
+        } else {
+
+        }
 //        System.out.println("_off2 " + offs2.toString());
     }
+
 }
