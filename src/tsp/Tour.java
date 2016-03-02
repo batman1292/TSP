@@ -35,6 +35,10 @@ public class Tour {
     public City getCity(int index) {
         return this.tour.get(index);
     }
+    
+    public int size() {
+        return this.tour.size();
+    }
 
     public void initIndividual() {
         Collections.shuffle(this.tour);
@@ -57,7 +61,8 @@ public class Tour {
         if (this.distance == 0) {
             calDistance();
         }
-        this.fitness = 1 / this.distance;
+        double val = 1 / this.distance;
+        this.fitness = val;
         return this.fitness;
     }
 

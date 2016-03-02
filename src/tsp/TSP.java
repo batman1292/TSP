@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-
 /**
  *
  * @author choocku
@@ -29,8 +28,8 @@ public class TSP {
     static City gene;
     static Tour chromosome[];
     static Population pop;
-    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
-//    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
+//    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
+    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
@@ -41,16 +40,19 @@ public class TSP {
 //        pop = new Population(num_sample);
         readData(file[0]);
         initPopulation();
-        System.out.println(pop.getBestFitness());
+//        System.out.println(pop.getBestFitness());
         for (int i = 0; i < MAX_GEN; i++) {
             Population selection_pop = selection();
             Population crossover_pop = crossover(selection_pop);
             Population mutation_pop = mutation(crossover_pop);
             pop = mutation_pop;
+            Population cdss_pop = cdss(mutation_pop);
 //            System.out.print(i+"\t");
-            System.out.println(pop.getBestFitness());
+//            System.out.print(pop+"\t");
+////            System.out.println(pop.getBestFitness());
+//            System.out.println(pop.toString());
         }
-        
+
     }
 
     public static void setNumDataFormFile(String filename) throws FileNotFoundException, IOException {
@@ -125,17 +127,17 @@ public class TSP {
         return result;
 //        return pop.getTour(pos_roulette);
     }
-    
-    public static Population crossover(Population selection_pop){
+
+    public static Population crossover(Population selection_pop) {
         Population result = new Population(num_sample);
         int index = 0;
-        for (int i = 0; i<num_sample/2; i++){
+        for (int i = 0; i < num_sample / 2; i++) {
             pmxCrossover(selection_pop.getTour(index), selection_pop.getTour(++index), index, result);
             index++;
         }
         return result;
     }
-    
+
     public static void pmxCrossover(Tour p1, Tour p2, int index, Population cross) {
         Tour offspring1 = new Tour();
         Tour offspring2 = new Tour();
@@ -217,15 +219,15 @@ public class TSP {
 //        inverseMutation(offspring1);
 //        return crossover;
     }
-    
-    public static Population mutation(Population crossover_pop){
+
+    public static Population mutation(Population crossover_pop) {
         Population result = new Population(num_sample);
-        for (int i = 0; i<num_sample; i++){
+        for (int i = 0; i < num_sample; i++) {
             result.setTour(i, inverseMutation(crossover_pop.getTour(i)));
         }
         return result;
     }
-    
+
 //    public static void inverseMutation(Tour offs1, Tour offs2) {
 //        double probability = 0.1;/\
 //        System.out.println("inverse mmutation");
@@ -261,9 +263,9 @@ public class TSP {
             int len = crossPoint2 - crossPoint1;
             int len2 = len >> 1;
             for (int i = 0; i < len2; ++i) {
-                City t = offs_inverse.getCity(crossPoint1+i);
-                offs_inverse.setCity(crossPoint1+i, offs_inverse.getCity(crossPoint2-i));
-                offs_inverse.setCity(crossPoint2-i, t);
+                City t = offs_inverse.getCity(crossPoint1 + i);
+                offs_inverse.setCity(crossPoint1 + i, offs_inverse.getCity(crossPoint2 - i));
+                offs_inverse.setCity(crossPoint2 - i, t);
             }
 //            System.out.println("mutation complete");
         } else {
@@ -274,6 +276,65 @@ public class TSP {
 //        System.out.println("inv res " + offs.toString());
         return offs_inverse;
 //>>>>>>> origin/master
+    }
+
+    public static Population cdss(Population mutation_pop) {
+        Population result = new Population(num_sample);
+
+        // print before order
+        for (int a = 0; a < mutation_pop.size(); a++) {
+            System.out.println("b4, a=" + a + " ,\t" + mutation_pop.getTour(a).getFitness() + ", " + mutation_pop.getTour(a));
+        }
+
+        // order fitness
+        for (int i = 0; i < mutation_pop.size(); i++) {
+            double i_fitness = mutation_pop.getTour(i).getFitness();
+            for (int j = 0; j < mutation_pop.size(); j++) {
+                double j_fitness = mutation_pop.getTour(j).getFitness();
+                if (i_fitness < j_fitness) {
+                    Tour temp = mutation_pop.getTour(i);
+                    mutation_pop.setTour(i, mutation_pop.getTour(j));
+                    mutation_pop.setTour(j, temp);
+                }
+            }
+        }
+        System.out.println("order done");
+        // print after order
+        for (int b = 0; b < mutation_pop.size(); b++) {
+            System.out.println("AF b=" + b + " ,\t" + mutation_pop.getTour(b).getFitness() + ", " + mutation_pop.getTour(b));
+        }
+
+        // comparison
+        for (int i = 0; i < mutation_pop.size() - 1; i++) {
+            for (int j = i + 1; j < mutation_pop.size(); j++) {
+                System.out.println("i=" + i + ",j=" + j);
+                cdssFunction(mutation_pop.getTour(i), mutation_pop.getTour(j));
+            }
+        }
+        return result;
+    }
+
+    public static Tour cdssFunction(Tour tour1, Tour tour2) {
+        boolean check = true;
+        for (int i = 0; i < tour1.size(); i++) {
+            check = true;
+            if (!tour1.getCity(i).equals(tour2.getCity(i))) {
+//                System.out.print("false");
+//                System.out.println();
+                check = false;
+                break;
+            }
+        }
+        
+        // if two tours are the same
+        // need to delete the same element
+        if (check) {
+            System.out.print("true");
+            System.out.println();
+            System.out.println(tour1);
+            System.out.println(tour2);
+        }
+        return tour1;
     }
 
 }

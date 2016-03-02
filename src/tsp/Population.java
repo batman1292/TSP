@@ -32,6 +32,10 @@ public class Population {
     public Tour getTour(int index) {
         return tours[index];
     }
+    
+    public int size() {
+        return this.tours.length;
+    }
 
     public double getBestFitness() {
         double fitness = 0.0;
