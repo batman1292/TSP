@@ -21,15 +21,15 @@ public class TSP {
      * @param args the command line arguments
      */
     static int numberChromosome;
-    static int MAX_GEN = 1;
+    static int MAX_GEN = 200;
     static int num_attribute = 2;
     static int num_sample;
     static double city[][];
     static City gene;
     static Tour chromosome[];
     static Population pop;
-//    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
-    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
+    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
+//    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
@@ -41,16 +41,18 @@ public class TSP {
         readData(file[0]);
         initPopulation();
 //        System.out.println(pop.getBestFitness());
+//        while(pop.getBestDistance() > 7542){
         for (int i = 0; i < MAX_GEN; i++) {
             Population selection_pop = selection();
             Population crossover_pop = crossover(selection_pop);
             Population mutation_pop = mutation(crossover_pop);
-            pop = mutation_pop;
-            Population cdss_pop = cdss(mutation_pop);
+            Population cdss_pop = cdss(pop, mutation_pop);
+            pop = cdss_pop;
 //            System.out.print(i+"\t");
 //            System.out.print(pop+"\t");
-////            System.out.println(pop.getBestFitness());
-//            System.out.println(pop.toString());
+            System.out.print(pop.getBestDistance() + "\t");
+            System.out.println(pop.sumDistance()/num_sample);
+            System.out.println(pop.toString());
         }
 
     }
@@ -278,67 +280,53 @@ public class TSP {
 //>>>>>>> origin/master
     }
 
-    public static Population cdss(Population mutation_pop) {
+    public static Population cdss(Population parent_pop, Population mutation_pop) {
+        Population temp_result = new Population(num_sample*2);
         Population result = new Population(num_sample);
-
-        // print before order
-        for (int a = 0; a < mutation_pop.size(); a++) {
-            System.out.println("b4, a=" + a + " ,\t" + mutation_pop.getTour(a).getFitness() + ", " + mutation_pop.getTour(a));
-        }
-
-        // order fitness
-        for (int i = 0; i < mutation_pop.size(); i++) {
-            double i_fitness = mutation_pop.getTour(i).getFitness();
-            for (int j = 0; j < mutation_pop.size(); j++) {
-                double j_fitness = mutation_pop.getTour(j).getFitness();
-                if (i_fitness < j_fitness) {
-                    Tour temp = mutation_pop.getTour(i);
-                    mutation_pop.setTour(i, mutation_pop.getTour(j));
-                    mutation_pop.setTour(j, temp);
-                }
-            }
-        }
-        System.out.println("order done");
-        // print after order
-        for (int b = 0; b < mutation_pop.size(); b++) {
-            System.out.println("AF b=" + b + " ,\t" + mutation_pop.getTour(b).getFitness() + ", " + mutation_pop.getTour(b));
-        }
-
+        int count = 0;
+        //order
+//        System.out.println(parent_pop.toString());
+        parent_pop.orderTour();
+//        System.out.println(parent_pop.toString());
         // comparison
-        for (int i = 0; i < mutation_pop.size() - 1; i++) {
-            for (int j = i + 1; j < mutation_pop.size(); j++) {
-                System.out.println("i=" + i + ",j=" + j);
-                cdssFunction(mutation_pop.getTour(i), mutation_pop.getTour(j));
+        for (int i = 0; i < num_sample; i++){
+            if(cdssFunction(parent_pop.getTour(i), mutation_pop.getTour(i))){
+                temp_result.setTour(count, parent_pop.getTour(i));
+                count++;
+            }else{
+//                System.out.print(temp_);
+                temp_result.setTour(count, parent_pop.getTour(i));
+                count++;
+                temp_result.setTour(count, mutation_pop.getTour(i));
+                count++;
             }
         }
+//        System.out.println(count);
+        if(count > num_sample){
+            for (int i = 0; i < num_sample; i++){
+                result.setTour(i, temp_result.getTour(i));
+            }
+        }else{
+            result = temp_result;
+        }
+        
         return result;
     }
 
-    public static Tour cdssFunction(Tour tour1, Tour tour2) {
+    public static Boolean cdssFunction(Tour tour1, Tour tour2) {
         boolean check = true;
         for (int i = 0; i < tour1.size(); i++) {
             check = true;
-            if (!tour1.getCity(i).equals(tour2.getCity(i))) {
+            if (tour1.getCity(i).getX() != tour2.getCity(i).getX() ||
+                    tour1.getCity(i).getY() != tour2.getCity(i).getY()) {
 //                System.out.print("false");
 //                System.out.println();
                 check = false;
                 break;
             }
         }
-        
-        // if two tours are the same
-        // need to delete the same element
-        if (check) {
-            System.out.print("true");
-            System.out.println();
-            System.out.println(tour1);
-            System.out.println(tour2);
-        }
-        return tour1;
+        return check;
     }
-
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7c9c67a8a04ba5a44f1e54edd9cc3bdcb8ab4dae
+//>>>>>>> 7c9c67a8a04ba5a44f1e54edd9cc3bdcb8ab4dae
+//

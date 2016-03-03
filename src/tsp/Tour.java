@@ -45,9 +45,11 @@ public class Tour {
     }
 
     public void calDistance() {
-        for (int i = 0; i < this.tour.size() - 1; i++) {
+        int i;
+        for (i = 0; i < this.tour.size() - 1; i++) {
             this.distance += this.tour.get(i).distanceTo(this.tour.get(i + 1));
         }
+        this.distance += this.tour.get(i).distanceTo(this.tour.get(0));
     }
 
     public double getDistance() {

@@ -16,15 +16,16 @@ public class Population {
 
     public Population(int num_tour) {
         this.tours = new Tour[num_tour];
-        for(int i = 0; i<num_tour; i++){
+        for (int i = 0; i < num_tour; i++) {
             this.tours[i] = new Tour();
         }
 //        this.tours = tour;
     }
-    
-    public Population(Tour tour[]){
+
+    public Population(Tour tour[]) {
         this.tours = tour;
     }
+
     public void setTour(int index, Tour tour) {
         this.tours[index] = tour;
     }
@@ -32,7 +33,7 @@ public class Population {
     public Tour getTour(int index) {
         return tours[index];
     }
-    
+
     public int size() {
         return this.tours.length;
     }
@@ -57,11 +58,50 @@ public class Population {
         return fitness;
     }
 
+    public double getBestDistance() {
+        double distance = 999999999;
+        for (int i = 0; i < this.tours.length; i++) {
+            if (this.tours[i].getDistance() < distance) {
+                distance = this.tours[i].getDistance();
+            }
+        }
+        return distance;
+    }
+
+    public double sumDistance() {
+        double fitness = 0.0;
+        for (int i = 0; i < this.tours.length; i++) {
+//            if(this.tours[i].getFitness() > fitness){
+            fitness += this.tours[i].getDistance();
+//            }?
+        }
+        return fitness;
+    }
+
+    public void orderTour() {
+        for (int i = 0; i < this.tours.length - 1; i++) {
+            int index = i;
+//            double i_distance = this.tours[index].getDistance();
+            for (int j = i + 1; j < this.tours.length; j++) {
+//                double j_distance = this.tours[j].getDistance();
+                if(this.tours[index].getDistance() > this.tours[j].getDistance()){
+//                if (i_distance < j_distance) {
+                    index = j;
+                }
+            }
+            Tour temp = this.tours[index];
+            this.tours[index] = this.tours[i];
+            this.tours[i] = temp;
+//            System.out.print(i + "\t");
+//            System.out.println(toString());
+        }
+    }
+
     @Override
     public String toString() {
         String geneString = " ";
-        for(int i = 0; i<this.tours.length; i++){
-            geneString += "p["+i+"] "+this.tours[i].toString()+"\n";
+        for (int i = 0; i < this.tours.length; i++) {
+            geneString += "p[" + i + "] " + this.getTour(i).getDistance() + "\t" + this.tours[i].toString() + "\n";
         }
         return geneString;
     }
