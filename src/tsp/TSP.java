@@ -337,4 +337,8 @@ public class TSP {
         return tour1;
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7c9c67a8a04ba5a44f1e54edd9cc3bdcb8ab4dae
