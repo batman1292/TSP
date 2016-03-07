@@ -23,6 +23,10 @@ public class Tour {
     public Tour() {
 
     }
+    
+    public int getIndexOf(City city) {
+        return this.tour.indexOf(city);
+    }
 
     public void addCity(City city) {
         this.tour.add(city);

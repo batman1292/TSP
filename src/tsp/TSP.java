@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+
 /**
  *
  * @author choocku
@@ -21,15 +22,16 @@ public class TSP {
      * @param args the command line arguments
      */
     static int numberChromosome;
-    static int MAX_GEN = 200;
+    static int MAX_GEN = 7000;
     static int num_attribute = 2;
     static int num_sample;
     static double city[][];
     static City gene;
     static Tour chromosome[];
     static Population pop;
-    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
-//    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
+//    static String local_path = "D:\\BVH\\MEE\\Intelligent System\\Task4\\";
+    static String local_path = "D:\\anatoliy\\MEE-Term2\\Intelligence System\\TSP\\src\\tsp\\";
+    static boolean Debug = false;
 
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
@@ -43,16 +45,22 @@ public class TSP {
 //        System.out.println(pop.getBestFitness());
 //        while(pop.getBestDistance() > 7542){
         for (int i = 0; i < MAX_GEN; i++) {
+//            if (MAX_GEN-1 == i) {
+//                Debug = true;
+//            }
             Population selection_pop = selection();
             Population crossover_pop = crossover(selection_pop);
             Population mutation_pop = mutation(crossover_pop);
             Population cdss_pop = cdss(pop, mutation_pop);
             pop = cdss_pop;
+//            System.out.println("-------------------------------------------------------------------------------------------------------------------");
 //            System.out.print(i+"\t");
 //            System.out.print(pop+"\t");
-            System.out.print(pop.getBestDistance() + "\t");
-            System.out.println(pop.sumDistance()/num_sample);
-            System.out.println(pop.toString());
+            
+                System.out.print(pop.getBestDistance() + "\t");
+                System.out.println(pop.sumDistance() / num_sample);
+            
+//            System.out.println(pop.toString());
         }
 
     }
@@ -143,15 +151,25 @@ public class TSP {
     public static void pmxCrossover(Tour p1, Tour p2, int index, Population cross) {
         Tour offspring1 = new Tour();
         Tour offspring2 = new Tour();
+        int[] replacement1 = new int[p1.size()];
+        int[] replacement2 = new int[p1.size()];
         int temp = 0;
         int crossPoint1 = 0;
         int crossPoint2 = 0;
         double probability = 0.7;
         int min = 0;
         int max = num_sample - 1;
-        crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
-        crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
+        if (Debug) {
+            System.out.print("\t\t");
+            for (int i = 0; i < num_sample; i++) {
+                System.out.print(i + "\t\t");
+            }
+            System.out.println();
+        }
         if (Math.random() < probability) {
+            // step 1 : Get two cutting points
+            crossPoint1 = min + (int) (Math.random() * ((max - min) + 1));
+            crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
             while (crossPoint1 == crossPoint2) {
                 crossPoint2 = min + (int) (Math.random() * ((max - min) + 1));
             }
@@ -160,66 +178,111 @@ public class TSP {
                 temp = crossPoint1;
                 crossPoint1 = crossPoint2;
                 crossPoint2 = temp;
-            }
-//            System.out.println("parent1 " + p1.toString());
-//            System.out.println("parent2 " + p2.toString());
-//            System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+            } // if
+
+            if (Debug) {
+                System.out.println("parent1 " + p1.toString());
+                System.out.println("parent2 " + p2.toString());
+                System.out.println("cross 1=" + crossPoint1 + ", cross 2=" + crossPoint2);
+            } // if
+
+            // STEP 2: Get the subchains to interchange
             for (int a = 0; a < num_sample; a++) {
                 offspring1.addCity(new City(-1, -1));
                 offspring2.addCity(new City(-1, -1));
-            }
-//        System.out.println("off1   " + offspring1.toString());
-//        System.out.println("off2   " + offspring2.toString());
+            } // for
+
+            // insert 
             for (int i = crossPoint1; i <= crossPoint2; i++) {
                 City c1 = p1.getCity(i);
                 City c2 = p2.getCity(i);
                 offspring1.setCity(i, c2);
                 offspring2.setCity(i, c1);
             }
-//            System.out.println();
-//            System.out.println("_off1 " + offspring1.toString());
-//            System.out.println("_off2 " + offspring2.toString());
-
-            for (int i = 0; i < num_sample; i++) {
-                for (int j = crossPoint1; j <= crossPoint2; j++) {
-                    if (i >= crossPoint1 && i <= crossPoint2) {
-                        continue;
-                    }
-                    if (p1.getCity(i).getX() == offspring1.getCity(j).getX()
-                            && p1.getCity(i).getY() == offspring1.getCity(j).getY()) {
-//                        System.out.println("off1 i=" + i + ",j=" + j);
-                        offspring1.setCity(i, offspring2.getCity(j));
-                    }
-
-                    if (p2.getCity(i).getX() == offspring2.getCity(j).getX()
-                            && p2.getCity(i).getY() == offspring2.getCity(j).getY()) {
-//                        System.out.println("*off2 i=" + i + ",j=" + j);
-                        offspring2.setCity(i, offspring1.getCity(j));
-                    }
-                }
+            if (Debug) {
+                System.out.println();
+                System.out.println("off1 " + offspring1.toString());
+                System.out.println("off2 " + offspring2.toString());
             }
-
             for (int i = 0; i < num_sample; i++) {
-                if (offspring1.getCity(i).getX() == -1) {
+                if (i < crossPoint1 || i > crossPoint2) {
                     offspring1.setCity(i, p1.getCity(i));
-                }
-
-                if (offspring2.getCity(i).getX() == -1) {
                     offspring2.setCity(i, p2.getCity(i));
                 }
             }
+            if (Debug) {
+                System.out.println();
+                System.out.println("off1 " + offspring1.toString());
+                System.out.println("off2 " + offspring2.toString());
+            }
+            for (int i = 0; i < offspring1.size(); i++) {
+                if ((i < crossPoint1) || (i > crossPoint2)) {
+
+                    // check offspring 1 duplicated
+                    while (check_forDuplicates(offspring1, i)) {
+                        for (int j = crossPoint1; j <= crossPoint2; j++) {
+                            if (offspring1.getCity(j).getX() == offspring1.getCity(i).getX()
+                                    && offspring1.getCity(j).getY() == offspring1.getCity(i).getY()) {
+                                offspring1.setCity(i, offspring2.getCity(j));
+                            } else if (offspring2.getCity(j).getX() == offspring1.getCity(i).getX()
+                                    && offspring2.getCity(j).getY() == offspring1.getCity(i).getY()) {
+                                offspring1.setCity(i, offspring1.getCity(j));
+                            }
+                        }
+                    }
+
+                    // check offspring 2 duplicated
+                    while (check_forDuplicates(offspring2, i)) {
+                        for (int j = crossPoint1; j <= crossPoint2; j++) {
+                            if (offspring2.getCity(j).getX() == offspring2.getCity(i).getX()
+                                    && offspring2.getCity(j).getY() == offspring2.getCity(i).getY()) {
+                                offspring2.setCity(i, offspring1.getCity(j));
+                            } else if (offspring1.getCity(j).getX() == offspring2.getCity(i).getX()
+                                    && offspring1.getCity(j).getY() == offspring2.getCity(i).getY()) {
+                                offspring2.setCity(i, offspring2.getCity(j));
+                            }
+                        }
+                    }
+                }
+            }
+            if (Debug) {
+                System.out.println("repair1 " + offspring1.toString());
+                System.out.println("repair2 " + offspring2.toString());
+            }
         } else {
-//            System.out.println("don't crossover");
+            if (Debug) {
+                System.out.println("don't crossover");
+            }
             offspring1 = p1;
             offspring2 = p2;
         }
+        if (Debug) {
+            System.out.println();
+            System.out.println("off1 " + offspring1.toString());
+            System.out.println("off2 " + offspring2.toString());
+        }
         cross.setTour(--index, offspring1);
         cross.setTour(++index, offspring2);
-//        System.out.println();
-//        System.out.println("_off1 " + offspring1.toString());
-//        System.out.println("_off2 " + offspring2.toString());
+
 //        inverseMutation(offspring1);
 //        return crossover;
+    }
+
+    public static boolean check_forDuplicates(Tour offspring, int i) {
+        for (int index = 0; index < num_sample; index++) {
+            if ((offspring.getCity(index).getX() == offspring.getCity(i).getX())
+                    && offspring.getCity(index).getY() == offspring.getCity(i).getY()
+                    && (i != index)) {
+                if (Debug) {
+                    System.out.println("duplicate");
+                    System.out.println("index=" + index + ", i=" + i
+                            + ", offx(i)=" + offspring.getCity(index).getX() + ", offy(index)" + offspring.getCity(i).getY()
+                            + ", offx(i)=" + offspring.getCity(index).getX() + ", offy(index)" + offspring.getCity(i).getY());
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Population mutation(Population crossover_pop) {
@@ -281,7 +344,7 @@ public class TSP {
     }
 
     public static Population cdss(Population parent_pop, Population mutation_pop) {
-        Population temp_result = new Population(num_sample*2);
+        Population temp_result = new Population(num_sample * 2);
         Population result = new Population(num_sample);
         int count = 0;
         //order
@@ -289,11 +352,11 @@ public class TSP {
         parent_pop.orderTour();
 //        System.out.println(parent_pop.toString());
         // comparison
-        for (int i = 0; i < num_sample; i++){
-            if(cdssFunction(parent_pop.getTour(i), mutation_pop.getTour(i))){
+        for (int i = 0; i < num_sample; i++) {
+            if (cdssFunction(parent_pop.getTour(i), mutation_pop.getTour(i))) {
                 temp_result.setTour(count, parent_pop.getTour(i));
                 count++;
-            }else{
+            } else {
 //                System.out.print(temp_);
                 temp_result.setTour(count, parent_pop.getTour(i));
                 count++;
@@ -302,14 +365,14 @@ public class TSP {
             }
         }
 //        System.out.println(count);
-        if(count > num_sample){
-            for (int i = 0; i < num_sample; i++){
+        if (count > num_sample) {
+            for (int i = 0; i < num_sample; i++) {
                 result.setTour(i, temp_result.getTour(i));
             }
-        }else{
+        } else {
             result = temp_result;
         }
-        
+
         return result;
     }
 
@@ -317,8 +380,8 @@ public class TSP {
         boolean check = true;
         for (int i = 0; i < tour1.size(); i++) {
             check = true;
-            if (tour1.getCity(i).getX() != tour2.getCity(i).getX() ||
-                    tour1.getCity(i).getY() != tour2.getCity(i).getY()) {
+            if (tour1.getCity(i).getX() != tour2.getCity(i).getX()
+                    || tour1.getCity(i).getY() != tour2.getCity(i).getY()) {
 //                System.out.print("false");
 //                System.out.println();
                 check = false;
