@@ -22,7 +22,7 @@ public class TSP {
      * @param args the command line arguments
      */
     static int numberChromosome;
-    static int MAX_GEN = 7000;
+    static int MAX_GEN = 20000;
     static int num_attribute = 2;
     static int num_sample;
     static double city[][];
@@ -56,10 +56,10 @@ public class TSP {
 //            System.out.println("-------------------------------------------------------------------------------------------------------------------");
 //            System.out.print(i+"\t");
 //            System.out.print(pop+"\t");
-            
-                System.out.print(pop.getBestDistance() + "\t");
-                System.out.println(pop.sumDistance() / num_sample);
-            
+            if (i == MAX_GEN - 1) {
+                System.out.print("best=" + pop.getBestDistance() + "\t");
+                System.out.println("AVG=" + pop.sumDistance() / num_sample);
+            }
 //            System.out.println(pop.toString());
         }
 
@@ -345,35 +345,61 @@ public class TSP {
 
     public static Population cdss(Population parent_pop, Population mutation_pop) {
         Population temp_result = new Population(num_sample * 2);
-        Population result = new Population(num_sample);
-        int count = 0;
-        //order
-//        System.out.println(parent_pop.toString());
-        parent_pop.orderTour();
-//        System.out.println(parent_pop.toString());
-        // comparison
-        for (int i = 0; i < num_sample; i++) {
-            if (cdssFunction(parent_pop.getTour(i), mutation_pop.getTour(i))) {
-                temp_result.setTour(count, parent_pop.getTour(i));
-                count++;
-            } else {
-//                System.out.print(temp_);
-                temp_result.setTour(count, parent_pop.getTour(i));
-                count++;
-                temp_result.setTour(count, mutation_pop.getTour(i));
-                count++;
-            }
-        }
-//        System.out.println(count);
-        if (count > num_sample) {
-            for (int i = 0; i < num_sample; i++) {
-                result.setTour(i, temp_result.getTour(i));
-            }
-        } else {
-            result = temp_result;
-        }
 
-        return result;
+        for (int i = 0; i < parent_pop.size(); i++) {
+            temp_result.setTour(i, parent_pop.getTour(i));
+        }
+        for (int i = 0; i < mutation_pop.size(); i++) {
+            temp_result.setTour(i + mutation_pop.size(), mutation_pop.getTour(i));
+        }
+        //order
+//        System.out.println("before");
+//        System.out.println(temp_result.toString());
+        temp_result.orderTour();
+//        System.out.println("after");
+//        System.out.println(temp_result.toString());
+
+        // comparison
+        for (int i = 0; i < temp_result.size(); i++) {
+            for (int j = i + 1; j < temp_result.size(); j++) {
+                if (cdssFunction(temp_result.getTour(i), temp_result.getTour(j))) {
+//                    System.out.println("i="+i+",j="+j);
+//                    System.out.println(temp_result.toString());
+                    temp_result.remove(i);
+//                    System.out.println("after");
+//                    System.out.println(temp_result.toString());
+                    j--;
+                }
+            }
+        } // comparison
+
+        int remaining = temp_result.size() - num_sample;
+//        System.out.println("temp_result_size=" + temp_result.size() + ",remaining=" + remaining);
+        if (remaining > 0) {
+//            System.out.println("remain > 0");
+//            System.out.println(temp_result.toString());
+            for (int i = 0; i < remaining; i++) {
+                temp_result.remove(num_sample);
+            }
+//            System.out.println("remove to N");
+//            System.out.println(temp_result.toString());
+        } else {
+            System.out.println("remain < 0");
+            System.out.println(temp_result.toString());
+            Tour fill_chromosome[] = new Tour[remaining];
+            for (int i = 0; i < fill_chromosome.length; i++) {
+                fill_chromosome[i] = new Tour();
+                int randomNum = 0 + (int) (Math.random() * (((num_sample - 1) - 0) + 1));
+                fill_chromosome[i].addCity(new City(city[randomNum][0], city[randomNum][1]));
+            }
+            for (int i = 0; i < fill_chromosome.length; i++) {
+                System.out.println("fill_chro[" + i + "] = " + fill_chromosome[i]);
+                temp_result.setTour(i + temp_result.size(), fill_chromosome[i]);
+            }
+            System.out.println("fill complete");
+            System.out.println(temp_result.toString());
+        }
+        return temp_result;
     }
 
     public static Boolean cdssFunction(Tour tour1, Tour tour2) {

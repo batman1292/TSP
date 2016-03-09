@@ -33,6 +33,23 @@ public class Population {
     public Tour getTour(int index) {
         return tours[index];
     }
+    
+    public Tour remove(int index) {
+        if (index < 0 || index >= this.tours.length) {
+            // FYI, this would be thrown anyway; not sure if you need to do it
+            throw new IndexOutOfBoundsException("Index out of bounds.");
+        }
+        Tour removed = this.tours[index];
+        Tour[] temp = new Tour[this.tours.length - 1];
+        for (int i = 0, j = 0; i < this.tours.length; i++) {
+            if (i != index) {
+                temp[j++] = this.tours[i];
+            }
+            // otherwise, j does not get incremented
+        }
+        this.tours = temp; // don't forget this!
+        return removed;
+    }
 
     public int size() {
         return this.tours.length;
